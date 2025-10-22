@@ -82,7 +82,7 @@ class TestcontainersConfiguration {
         var otel = new OtelTracingConfigurationSettings("lgtm-stack:4318", false, "http");
         var tracing = new TracingConfigurationSettings("1", true, otel, null);
         
-        return new DaprContainer("daprio/daprd:1.15.4")
+        return new DaprContainer("daprio/daprd:1.16.0")
                 .withAppName("service-b")
                 .withAppChannelAddress("host.testcontainers.internal")
                 .withAppPort(8081)

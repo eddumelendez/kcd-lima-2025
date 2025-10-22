@@ -68,7 +68,7 @@ class TestcontainersConfiguration {
 //                .withNetwork(daprNetwork)
 //                .withNetworkAliases("wiremock");
 //
-//        DaprContainer daprContainer = new DaprContainer("daprio/daprd:1.15.4")
+//        DaprContainer daprContainer = new DaprContainer("daprio/daprd:1.16.0")
 //                .withAppName("service-b")
 //                .withAppChannelAddress("wiremock")
 //                .withAppPort(8080)
@@ -85,7 +85,7 @@ class TestcontainersConfiguration {
         var otel = new OtelTracingConfigurationSettings("lgtm-stack:4318", false, "http");
         var tracing = new TracingConfigurationSettings("1", true, otel, null);
         
-        return new DaprContainer("daprio/daprd:1.15.4")
+        return new DaprContainer("daprio/daprd:1.16.0")
                 .withAppName("service-a")
                 .withAppPort(8080)
                 .withNetwork(daprNetwork)
