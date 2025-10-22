@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.grafana.LgtmStackContainer;
 
 import java.io.IOException;
@@ -81,6 +82,13 @@ class TestcontainersConfiguration {
 
         var otel = new OtelTracingConfigurationSettings("lgtm-stack:4318", false, "http");
         var tracing = new TracingConfigurationSettings("1", true, otel, null);
+
+        RabbitMQContainer rabbitMqContainer = new RabbitMQContainer("rabbitmq:3.9.11-alpine")
+                .withNetwork(daprNetwork)
+                .withNetworkAliases("rabbitmq")
+                .withReuse(true);
+
+        var pubsub = Map.of("connectionString", "amqp://guest:guest@rabbitmq:5672", "user", "guest", "password", "guest");
         
         return new DaprContainer("daprio/daprd:1.16.0")
                 .withAppName("service-b")
@@ -90,7 +98,8 @@ class TestcontainersConfiguration {
                 .withReusablePlacement(true)
                 .withConfiguration(new Configuration("otel-config", tracing))
                 .withComponent(new Component("conferences", "configuration.redis", "v1", redisMetadata))
-                .dependsOn(lgtmStackContainer, redisContainer);
+                .withComponent(new Component("pubsub", "pubsub.rabbitmq", "v1", pubsub))
+                .dependsOn(lgtmStackContainer, redisContainer, rabbitMqContainer);
     }
 
 }

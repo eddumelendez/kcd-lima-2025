@@ -1,5 +1,6 @@
 package org.example.kcdlima;
 
+import io.dapr.testcontainers.Component;
 import io.dapr.testcontainers.Configuration;
 import io.dapr.testcontainers.DaprContainer;
 import io.dapr.testcontainers.DaprPlacementContainer;
@@ -14,11 +15,13 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.context.annotation.Bean;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.grafana.LgtmStackContainer;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
 
 import java.util.List;
+import java.util.Map;
 
 @TestConfiguration(proxyBeanMethods = false)
 class TestcontainersConfiguration {
@@ -84,6 +87,13 @@ class TestcontainersConfiguration {
 
         var otel = new OtelTracingConfigurationSettings("lgtm-stack:4318", false, "http");
         var tracing = new TracingConfigurationSettings("1", true, otel, null);
+
+        RabbitMQContainer rabbitMqContainer = new RabbitMQContainer("rabbitmq:3.9.11-alpine")
+                .withNetwork(daprNetwork)
+                .withNetworkAliases("rabbitmq")
+                .withReuse(true);
+        
+        var pubsub = Map.of("connectionString", "amqp://guest:guest@rabbitmq:5672", "user", "guest", "password", "guest");
         
         return new DaprContainer("daprio/daprd:1.16.0")
                 .withAppName("service-a")
@@ -91,7 +101,8 @@ class TestcontainersConfiguration {
                 .withNetwork(daprNetwork)
                 .withReusablePlacement(true)
                 .withConfiguration(new Configuration("otel-config", tracing))
-                .dependsOn(lgtmStackContainer);
+                .withComponent(new Component("pubsub", "pubsub.rabbitmq", "v1", pubsub))
+                .dependsOn(lgtmStackContainer, rabbitMqContainer);
     }
 
 }

@@ -67,6 +67,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>rabbitmq</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.dapr</groupId>
             <artifactId>testcontainers-dapr</artifactId>
             <version>0.14.1</version>
