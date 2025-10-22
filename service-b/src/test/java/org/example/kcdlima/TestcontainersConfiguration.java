@@ -60,7 +60,8 @@ class TestcontainersConfiguration {
             @Override
             protected void containerIsStarted(InspectContainerResponse containerInfo) {
                 try {
-                    execInContainer("redis-cli", "-p", "6379", "MSET", "greeting", "KCD Lima 2025");
+                    execInContainer("redis-cli", "-p", "6379", "MSET", "kcdlima", "KCD Lima 2025");
+                    execInContainer("redis-cli", "-p", "6379", "MSET", "devjvm", "DevJVM 2025");
                 } catch (IOException | InterruptedException e) {
                     throw new RuntimeException("Error running redis command", e);
                 }
@@ -88,7 +89,7 @@ class TestcontainersConfiguration {
                 .withNetwork(daprNetwork)
                 .withReusablePlacement(true)
                 .withConfiguration(new Configuration("otel-config", tracing))
-                .withComponent(new Component("kcdlima", "configuration.redis", "v1", redisMetadata))
+                .withComponent(new Component("conferences", "configuration.redis", "v1", redisMetadata))
                 .dependsOn(lgtmStackContainer, redisContainer);
     }
 

@@ -15,7 +15,7 @@ public class ConferenceController {
 
     @GetMapping("/conference")
     public String greetings() {
-        var value = this.daprClient.getConfiguration("kcdlima", "greeting")
+        var value = this.daprClient.getConfiguration("conferences", "devjvm")
                 .block()
                 .getValue();
         return value;
