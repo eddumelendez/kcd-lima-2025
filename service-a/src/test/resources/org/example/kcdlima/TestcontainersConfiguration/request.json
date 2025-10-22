@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/conference"
+  },
+  "response": {
+    "status": 200,
+    "body": "KCD Lima 2025",
+    "headers": {
+      "Content-Type": "text/plain"
+    }
+  }
+}
