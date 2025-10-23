@@ -11,10 +11,11 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(DaprPubSubProperties.class)
 public class MessagingConfig {
 
-    @Bean
-    public DaprMessagingTemplate<String> messagingTemplate(DaprClient daprClient,
-                                                           DaprPubSubProperties daprPubSubProperties) {
-        return new DaprMessagingTemplate<>(daprClient, daprPubSubProperties.getName(), daprPubSubProperties.isObservationEnabled());
-    }
-    
+	@Bean
+	public DaprMessagingTemplate<String> messagingTemplate(DaprClient daprClient,
+			DaprPubSubProperties daprPubSubProperties) {
+		return new DaprMessagingTemplate<>(daprClient, daprPubSubProperties.getName(),
+				daprPubSubProperties.isObservationEnabled());
+	}
+
 }

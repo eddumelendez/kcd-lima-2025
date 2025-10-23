@@ -12,35 +12,31 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ConferenceController {
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConferenceController.class);
-    
-    private final DaprClient daprClient;
 
-    public ConferenceController(DaprClient daprClient) {
-        this.daprClient = daprClient;
-    }
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConferenceController.class);
 
-    @GetMapping("/conference")
-    public String greetings() {
-        var value = this.daprClient.getConfiguration("conferences", "devjvm")
-                .block()
-                .getValue();
-        return value;
-    }
+	private final DaprClient daprClient;
 
-    @GetMapping("/new-conference")
-    public String newConference() {
-        var value = this.daprClient.getConfiguration("conferences", "devjvm")
-                .block()
-                .getValue();
-        return value.toUpperCase();
-    }
+	public ConferenceController(DaprClient daprClient) {
+		this.daprClient = daprClient;
+	}
 
-    @PostMapping("/subscribe")
-    @Topic(pubsubName = "pubsub", name = "notification")
-    public void subscribe(@RequestBody CloudEvent<String> cloudEvent){
-        LOGGER.info("Received message from {} with data {}", cloudEvent.getSource(), cloudEvent.getData());
-    }
+	@GetMapping("/conference")
+	public String greetings() {
+		var value = this.daprClient.getConfiguration("conferences", "devjvm").block().getValue();
+		return value;
+	}
+
+	@GetMapping("/new-conference")
+	public String newConference() {
+		var value = this.daprClient.getConfiguration("conferences", "devjvm").block().getValue();
+		return value.toUpperCase();
+	}
+
+	@PostMapping("/subscribe")
+	@Topic(pubsubName = "pubsub", name = "notification")
+	public void subscribe(@RequestBody CloudEvent<String> cloudEvent) {
+		LOGGER.info("Received message from {} with data {}", cloudEvent.getSource(), cloudEvent.getData());
+	}
 
 }

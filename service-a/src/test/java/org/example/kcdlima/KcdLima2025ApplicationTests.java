@@ -12,20 +12,20 @@ import static org.hamcrest.Matchers.*;
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class KcdLima2025ApplicationTests {
-    
-    @LocalServerPort
-    private int port;
 
-    @Test
-    void contextLoads() {
-        RestAssured.baseURI = "http://localhost";
-        RestAssured.port = port;
-        RestAssured.registerParser("text/plain", Parser.TEXT);
-        RestAssured.get("/greetings")
-                .then()
-                .statusCode(200)
-                .assertThat()
-                .body("message", equalTo("Hello KCD Lima 2025!!!"));
-    }
+	@LocalServerPort
+	private int port;
+
+	@Test
+	void contextLoads() {
+		RestAssured.baseURI = "http://localhost";
+		RestAssured.port = port;
+		RestAssured.registerParser("text/plain", Parser.TEXT);
+		RestAssured.get("/greetings")
+			.then()
+			.statusCode(200)
+			.assertThat()
+			.body("message", equalTo("Hello KCD Lima 2025!!!"));
+	}
 
 }

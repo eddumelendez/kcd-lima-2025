@@ -8,12 +8,12 @@ import org.springframework.context.annotation.Import;
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class KcdLima2025ApplicationTests {
-    
-    @LocalServerPort
-    private int port;
 
-    @Test
-    void contextLoads() {
-    }
+	@LocalServerPort
+	private int port;
+
+	@Test
+	void contextLoads() {
+	}
 
 }
