@@ -16,14 +16,15 @@ public class GreetingsController {
     private final DaprMessagingTemplate<String> messagingTemplate;
 
     public GreetingsController(DaprConnectionDetails daprConnectionDetails, RestClient.Builder restClientBuilder, DaprMessagingTemplate<String> messagingTemplate) {
-        this.restClient = restClientBuilder.baseUrl(daprConnectionDetails.httpEndpoint() + "/v1.0/invoke").build();
+        this.restClient = restClientBuilder.baseUrl(daprConnectionDetails.getHttpEndpoint()).build();
         this.messagingTemplate = messagingTemplate;
     }
 
     @GetMapping("/greetings")
     public String greetings() {
         var name = this.restClient.get()
-                .uri("/service-b/method/conference")
+                .uri("/conference")
+                .header("dapr-app-id", "service-b")
                 .retrieve()
                 .toEntity(String.class)
                 .getBody();

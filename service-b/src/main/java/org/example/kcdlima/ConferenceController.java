@@ -29,6 +29,14 @@ public class ConferenceController {
         return value;
     }
 
+    @GetMapping("/new-conference")
+    public String newConference() {
+        var value = this.daprClient.getConfiguration("conferences", "devjvm")
+                .block()
+                .getValue();
+        return value.toUpperCase();
+    }
+
     @PostMapping("/subscribe")
     @Topic(pubsubName = "pubsub", name = "notification")
     public void subscribe(@RequestBody CloudEvent<String> cloudEvent){

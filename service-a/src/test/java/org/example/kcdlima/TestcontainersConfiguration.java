@@ -1,9 +1,11 @@
 package org.example.kcdlima;
 
+import io.dapr.testcontainers.AppHttpPipeline;
 import io.dapr.testcontainers.Component;
 import io.dapr.testcontainers.Configuration;
 import io.dapr.testcontainers.DaprContainer;
 import io.dapr.testcontainers.DaprPlacementContainer;
+import io.dapr.testcontainers.ListEntry;
 import io.dapr.testcontainers.OtelTracingConfigurationSettings;
 import io.dapr.testcontainers.TracingConfigurationSettings;
 import org.junit.runner.Description;
@@ -18,8 +20,11 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.grafana.LgtmStackContainer;
+import org.testcontainers.utility.MountableFile;
 import org.wiremock.integrations.testcontainers.WireMockContainer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +76,7 @@ class TestcontainersConfiguration {
 //                .withNetwork(daprNetwork)
 //                .withNetworkAliases("wiremock");
 //
-//        DaprContainer daprContainer = new DaprContainer("daprio/daprd:1.16.0")
+//        DaprContainer daprContainer = new DaprContainer("daprio/daprd:1.16.1-rc-2")
 //                .withAppName("service-b")
 //                .withAppChannelAddress("wiremock")
 //                .withAppPort(8080)
@@ -94,14 +99,27 @@ class TestcontainersConfiguration {
                 .withReuse(true);
         
         var pubsub = Map.of("connectionString", "amqp://guest:guest@rabbitmq:5672", "user", "guest", "password", "guest");
+
+        List<ListEntry> handlers = List.of(new ListEntry("routeralias", "middleware.http.routeralias"));
+
+        AppHttpPipeline appHttpPipeline = new AppHttpPipeline(handlers);
+
+        var routes = """
+                {
+                    "/conference": "/new-conference"
+                }
+                """;
+        var routesMetadata = Map.of("routes", routes);
         
         return new DaprContainer("daprio/daprd:1.16.0")
                 .withAppName("service-a")
                 .withAppPort(8080)
                 .withNetwork(daprNetwork)
                 .withReusablePlacement(true)
-                .withConfiguration(new Configuration("otel-config", tracing))
+                .withReusableScheduler(true)
+                .withConfiguration(new Configuration("config", tracing, appHttpPipeline))
                 .withComponent(new Component("pubsub", "pubsub.rabbitmq", "v1", pubsub))
+                .withComponent(new Component("routeralias", "middleware.http.routeralias", "v1", routesMetadata))
                 .dependsOn(lgtmStackContainer, rabbitMqContainer);
     }
 
