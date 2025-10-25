@@ -2,6 +2,7 @@ package org.example.kcdlima;
 
 import io.dapr.spring.boot.autoconfigure.client.DaprConnectionDetails;
 import io.dapr.spring.messaging.DaprMessagingTemplate;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
@@ -17,7 +18,9 @@ public class GreetingsController {
 
 	public GreetingsController(DaprConnectionDetails daprConnectionDetails, RestClient.Builder restClientBuilder,
 			DaprMessagingTemplate<String> messagingTemplate) {
-		this.restClient = restClientBuilder.baseUrl(daprConnectionDetails.getHttpEndpoint()).build();
+		this.restClient = restClientBuilder.requestFactory(new SimpleClientHttpRequestFactory())
+			.baseUrl(daprConnectionDetails.getHttpEndpoint())
+			.build();
 		this.messagingTemplate = messagingTemplate;
 	}
 

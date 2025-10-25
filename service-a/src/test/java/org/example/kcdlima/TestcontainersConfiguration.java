@@ -1,11 +1,8 @@
 package org.example.kcdlima;
 
-import io.dapr.testcontainers.AppHttpPipeline;
 import io.dapr.testcontainers.Component;
 import io.dapr.testcontainers.Configuration;
 import io.dapr.testcontainers.DaprContainer;
-import io.dapr.testcontainers.DaprPlacementContainer;
-import io.dapr.testcontainers.ListEntry;
 import io.dapr.testcontainers.OtelTracingConfigurationSettings;
 import io.dapr.testcontainers.TracingConfigurationSettings;
 import org.junit.runner.Description;
@@ -18,13 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.RabbitMQContainer;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.grafana.LgtmStackContainer;
-import org.testcontainers.utility.MountableFile;
-import org.wiremock.integrations.testcontainers.WireMockContainer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -70,27 +62,6 @@ class TestcontainersConfiguration {
 	@Bean
 	@ServiceConnection
 	public DaprContainer daprContainer() {
-		// DaprPlacementContainer placementContainer = new
-		// DaprPlacementContainer("daprio/placement")
-		// .withNetwork(daprNetwork)
-		// .withNetworkAliases("placement");
-		//
-		// WireMockContainer wireMock = new
-		// WireMockContainer("wiremock/wiremock:3.13.1-alpine")
-		// .withMapping("dapr", TestcontainersConfiguration.class, "request.json")
-		// .withLogConsumer(new Slf4jLogConsumer(LOGGER))
-		// .withNetwork(daprNetwork)
-		// .withNetworkAliases("wiremock");
-		//
-		// DaprContainer daprContainer = new DaprContainer("daprio/daprd:1.16.1-rc-2")
-		// .withAppName("service-b")
-		// .withAppChannelAddress("wiremock")
-		// .withAppPort(8080)
-		// .withNetwork(daprNetwork)
-		// .withPlacementContainer(placementContainer)
-		// .withAppHealthCheckPath("/__admin/health")
-		// .dependsOn(wireMock, placementContainer);
-
 		LgtmStackContainer lgtmStackContainer = new LgtmStackContainer("grafana/otel-lgtm:0.11.4")
 			.withNetwork(daprNetwork)
 			.withNetworkAliases("lgtm-stack")
@@ -106,25 +77,13 @@ class TestcontainersConfiguration {
 		var pubsub = Map.of("connectionString", "amqp://guest:guest@rabbitmq:5672", "user", "guest", "password",
 				"guest");
 
-		List<ListEntry> handlers = List.of(new ListEntry("routeralias", "middleware.http.routeralias"));
-
-		AppHttpPipeline appHttpPipeline = new AppHttpPipeline(handlers);
-
-		var routes = """
-				{
-				    "/conference": "/new-conference"
-				}
-				""";
-		var routesMetadata = Map.of("routes", routes);
-
 		return new DaprContainer("daprio/daprd:1.16.0").withAppName("service-a")
 			.withAppPort(8080)
 			.withNetwork(daprNetwork)
 			.withReusablePlacement(true)
 			.withReusableScheduler(true)
-			.withConfiguration(new Configuration("config", tracing, appHttpPipeline))
+			.withConfiguration(new Configuration("config", tracing, null))
 			.withComponent(new Component("pubsub", "pubsub.rabbitmq", "v1", pubsub))
-			.withComponent(new Component("routeralias", "middleware.http.routeralias", "v1", routesMetadata))
 			.dependsOn(lgtmStackContainer, rabbitMqContainer);
 	}
 
