@@ -8,8 +8,6 @@ import io.dapr.testcontainers.DaprContainer;
 import io.dapr.testcontainers.ListEntry;
 import io.dapr.testcontainers.OtelTracingConfigurationSettings;
 import io.dapr.testcontainers.TracingConfigurationSettings;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
@@ -38,11 +36,6 @@ class TestcontainersConfiguration {
 			@Override
 			public void close() {
 
-			}
-
-			@Override
-			public Statement apply(Statement base, Description description) {
-				return null;
 			}
 		};
 
@@ -78,7 +71,7 @@ class TestcontainersConfiguration {
 
 		Map<String, String> redisMetadata = Map.of("redisHost", "redis:6379");
 
-		LgtmStackContainer lgtmStackContainer = new LgtmStackContainer("grafana/otel-lgtm:0.11.4").withReuse(true)
+		LgtmStackContainer lgtmStackContainer = new LgtmStackContainer("grafana/otel-lgtm:0.21.0").withReuse(true)
 			.withNetwork(daprNetwork)
 			.withNetworkAliases("lgtm-stack");
 
@@ -103,7 +96,7 @@ class TestcontainersConfiguration {
 				""";
 		var routesMetadata = Map.of("routes", routes);
 
-		return new DaprContainer("daprio/daprd:1.16.0").withAppName("service-b")
+		return new DaprContainer("daprio/daprd:1.17.0").withAppName("service-b")
 			.withAppChannelAddress("host.testcontainers.internal")
 			.withAppPort(8081)
 			.withNetwork(daprNetwork)

@@ -1,6 +1,6 @@
 package org.example.kcdlima;
 
-import io.dapr.spring.boot.autoconfigure.client.DaprConnectionDetails;
+import io.dapr.spring.boot.properties.client.DaprConnectionDetails;
 import io.dapr.spring.messaging.DaprMessagingTemplate;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -50,7 +50,7 @@ class TestTestcontainersConfiguration {
 			.withNetwork(daprNetwork)
 			.withNetworkAliases("wiremock");
 
-		DaprContainer daprContainer = new DaprContainer("daprio/daprd:1.16.0").withAppName("service-b")
+		DaprContainer daprContainer = new DaprContainer("daprio/daprd:1.17.0").withAppName("service-b")
 			.withAppChannelAddress("wiremock")
 			.withAppPort(8080)
 			.withNetwork(daprNetwork)
@@ -64,7 +64,7 @@ class TestTestcontainersConfiguration {
 		var pubsub = Map.of("connectionString", "amqp://guest:guest@rabbitmq:5672", "user", "guest", "password",
 				"guest");
 
-		return new DaprContainer("daprio/daprd:1.16.0").withAppName("service-a")
+		return new DaprContainer("daprio/daprd:1.17.0").withAppName("service-a")
 			.withAppPort(8080)
 			.withAppChannelAddress("host.testcontainers.internal")
 			.withNetwork(daprNetwork)

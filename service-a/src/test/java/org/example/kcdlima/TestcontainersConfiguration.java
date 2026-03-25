@@ -5,8 +5,6 @@ import io.dapr.testcontainers.Configuration;
 import io.dapr.testcontainers.DaprContainer;
 import io.dapr.testcontainers.OtelTracingConfigurationSettings;
 import io.dapr.testcontainers.TracingConfigurationSettings;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -38,11 +36,6 @@ class TestcontainersConfiguration {
 			public void close() {
 
 			}
-
-			@Override
-			public Statement apply(Statement base, Description description) {
-				return null;
-			}
 		};
 
 		List<com.github.dockerjava.api.model.Network> networks = DockerClientFactory.instance()
@@ -62,7 +55,7 @@ class TestcontainersConfiguration {
 	@Bean
 	@ServiceConnection
 	public DaprContainer daprContainer() {
-		LgtmStackContainer lgtmStackContainer = new LgtmStackContainer("grafana/otel-lgtm:0.11.4")
+		LgtmStackContainer lgtmStackContainer = new LgtmStackContainer("grafana/otel-lgtm:0.21.0")
 			.withNetwork(daprNetwork)
 			.withNetworkAliases("lgtm-stack")
 			.withReuse(true);
@@ -77,7 +70,7 @@ class TestcontainersConfiguration {
 		var pubsub = Map.of("connectionString", "amqp://guest:guest@rabbitmq:5672", "user", "guest", "password",
 				"guest");
 
-		return new DaprContainer("daprio/daprd:1.16.0").withAppName("service-a")
+		return new DaprContainer("daprio/daprd:1.17.0").withAppName("service-a")
 			.withAppPort(8080)
 			.withNetwork(daprNetwork)
 			.withReusablePlacement(true)
